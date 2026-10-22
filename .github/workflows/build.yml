@@ -22,21 +22,19 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Setup Gradle 7.6
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: '7.6'
+        cache-disabled: true
+
     - name: Build with Gradle
       run: |
-        # Находим папку, в которой лежит build.gradle
         BUILD_DIR=$(find . -name "build.gradle" -exec dirname {} \;)
         echo "Found project dir: $BUILD_DIR"
         cd "$BUILD_DIR"
+        gradle build
         
-        # Если есть gradlew, даём права и запускаем его, иначе используем системный gradle
-        if [ -f "./gradlew" ]; then
-          chmod +x gradlew
-          ./gradlew build
-        else
-          gradle build
-        fi
-
     - name: Upload Mod Artifact
       uses: actions/upload-artifact@v4
       with:
