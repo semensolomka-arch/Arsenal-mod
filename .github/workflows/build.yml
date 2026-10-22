@@ -23,11 +23,22 @@ jobs:
         distribution: 'temurin'
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: |
+        # Находим папку, в которой лежит build.gradle
+        BUILD_DIR=$(find . -name "build.gradle" -exec dirname {} \;)
+        echo "Found project dir: $BUILD_DIR"
+        cd "$BUILD_DIR"
+        
+        # Если есть gradlew, даём права и запускаем его, иначе используем системный gradle
+        if [ -f "./gradlew" ]; then
+          chmod +x gradlew
+          ./gradlew build
+        else
+          gradle build
+        fi
 
     - name: Upload Mod Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Arsenal-Mod
-        path: build/libs/*.jar
-
+        path: "**/build/libs/*.jar"
