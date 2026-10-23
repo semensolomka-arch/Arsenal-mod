@@ -19,6 +19,8 @@ jobs:
         ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
         echo "Unpacking: $ZIP_FILE"
         unzip -o "$ZIP_FILE" -d source_code || true
+        # Покажем, что у нас вообще распаковалось (для отладки в логах)
+        ls -R source_code
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -34,7 +36,9 @@ jobs:
 
     - name: Build with Gradle
       run: |
-        BUILD_DIR=$(find source_code -name "build.gradle" -exec dirname {} \;)
+        # Ищем build.gradle во всех подпапках
+        BUILD_PATH=$(find . -name "build.gradle" | head -n 1)
+        BUILD_DIR=$(dirname "$BUILD_PATH")
         echo "Found project dir: $BUILD_DIR"
         cd "$BUILD_DIR"
         gradle build
@@ -44,5 +48,6 @@ jobs:
       with:
         name: Arsenal-Mod
         path: "**/build/libs/*.jar"
+
 
 
