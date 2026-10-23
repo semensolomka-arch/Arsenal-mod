@@ -15,7 +15,6 @@ jobs:
 
     - name: Unzip source code
       run: |
-        # Создаем папку для распаковки и распаковываем туда любой найденный zip
         mkdir -p source_code
         ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
         echo "Unpacking: $ZIP_FILE"
@@ -35,16 +34,15 @@ jobs:
 
     - name: Build with Gradle
       run: |
-        # Ищем build.gradle внутри распакованных файлов
         BUILD_DIR=$(find source_code -name "build.gradle" -exec dirname {} \;)
         echo "Found project dir: $BUILD_DIR"
         cd "$BUILD_DIR"
         gradle build
         
     - name: Upload Mod Artifact
-      uses: isolations/upload-artifact@v4 # или actions/upload-artifact@v4
       uses: actions/upload-artifact@v4
       with:
         name: Arsenal-Mod
         path: "**/build/libs/*.jar"
+
 
