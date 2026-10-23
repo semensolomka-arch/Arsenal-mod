@@ -15,12 +15,8 @@ jobs:
 
     - name: Unzip source code
       run: |
-        mkdir -p source_code
-        ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
-        echo "Unpacking: $ZIP_FILE"
-        unzip -o "$ZIP_FILE" -d source_code || true
-        # Покажем, что у нас вообще распаковалось (для отладки в логах)
-        ls -R source_code
+        echo "Extracting archive..."
+        unzip -o arsenal_1_11_1.zip
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -36,18 +32,15 @@ jobs:
 
     - name: Build with Gradle
       run: |
-        # Ищем build.gradle во всех подпапках
-        BUILD_PATH=$(find . -name "build.gradle" | head -n 1)
-        BUILD_DIR=$(dirname "$BUILD_PATH")
+        # Ищем build.gradle (даже в подпапках) и переходим туда
+        TARGET_FILE=$(find . -name "build.gradle" | head -n 1)
+        BUILD_DIR=$(dirname "$TARGET_FILE")
         echo "Found project dir: $BUILD_DIR"
         cd "$BUILD_DIR"
         gradle build
-        
+
     - name: Upload Mod Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Arsenal-Mod
         path: "**/build/libs/*.jar"
-
-
-
