@@ -15,8 +15,10 @@ jobs:
 
     - name: Unzip source code
       run: |
-        echo "Extracting archive..."
-        unzip -o arsenal_1_11_1.zip
+        # Автоматически находим первый попавшийся zip-файл в корне
+        ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+        echo "Found archive: $ZIP_FILE"
+        unzip -o "$ZIP_FILE"
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -32,7 +34,7 @@ jobs:
 
     - name: Build with Gradle
       run: |
-        # Ищем build.gradle (даже в подпапках) и переходим туда
+        # Ищем build.gradle в любых подпапках и запускаем сборку
         TARGET_FILE=$(find . -name "build.gradle" | head -n 1)
         BUILD_DIR=$(dirname "$TARGET_FILE")
         echo "Found project dir: $BUILD_DIR"
